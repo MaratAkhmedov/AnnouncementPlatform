@@ -39,9 +39,9 @@
                 <!-- Sidebar -->
                 <div class="mb-5" id="sidebar-wrapper">
                     <div class="list-group">
-                        <a href="#" class="list-group-item list-group-item-action bg-secondary text-white">Mis anuncios</a>
-                        <a href="#" class="list-group-item list-group-item-action">Mis mensajes</a>
-                        <a href="#" class="list-group-item list-group-item-action">Ajustes</a>
+                        <a href="{{route("profile")}}" class="list-group-item list-group-item-action" id="1">Mis anuncios</a>
+                        <a href="" class="list-group-item list-group-item-action" id="2">Mis mensajes</a>
+                        <a href="{{route("profile_settings")}}" class="list-group-item list-group-item-action" id="3">Ajustes</a>
                     </div>
                 </div>
             </div>

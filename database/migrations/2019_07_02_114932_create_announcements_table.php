@@ -27,7 +27,7 @@ class CreateAnnouncementsTable extends Migration
             //*************
             $table->string("name")->nullable();
             $table->string("description")->nullable();
-            $table->string("price")->nullable();
+            $table->decimal('price', 8, 2)->nullable();
             $table->string("location")->nullable();
             $table->string("email")->nullable();
             $table->string("phone")->nullable();

@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use function App\Helpers\url_to_string;
+use App\Subcategory;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use App\Category;
+use App\Helpers\UrlHelper;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -17,15 +21,46 @@ class RouteServiceProvider extends ServiceProvider
     protected $namespace = 'App\Http\Controllers';
 
     /**
-     * Define your route model bindings, pattern filters, etc.
-     *
-     * @return void
+     * @param Router $router
+     * returns the category to the controller class that implements in his route {category} paramater
      */
     public function boot()
     {
         //
 
         parent::boot();
+
+        /**
+         * check if category parameter in web.php (routing) is valide
+         */
+        Route::bind('category', function ($name) {
+            $name_in_db = str_replace('-', ' ', $name);
+            $category = Category::where('name', '=', $name_in_db)->first();
+            if (!$category) {
+                //if category is not valide return 404 error page
+                abort(404);
+            }
+            /**
+             * if i need return something to categoryController, i should return it here
+             * return $category->toArray();
+             */
+        });
+
+        /**
+         * check if subcategory parameter in web.php (routing) is valide
+         */
+        Route::bind('subcategory', function ($name) {
+            $name_in_db = str_replace('-', ' ', $name);
+            $subcategory = Subcategory::where('name', '=', $name_in_db)->first();
+            //dd($subcategory->name);
+            if (!$subcategory) {
+                abort(404);
+            }
+            /**
+             * if i need return something to categoryController, i should return it here
+             * return $subcategory->toArray();
+             */
+        });
     }
 
     /**

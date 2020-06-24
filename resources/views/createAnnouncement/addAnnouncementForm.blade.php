@@ -106,10 +106,10 @@
 
 @section('content')
     <div class="container">
-        <form method="post" class="mt-5" action="{{route("store")}}" enctype="multipart/form-data">
+        <form method="post" class="mt-5" action="{{isset($old_values) ? route("update", $old_values['id']) : route('store')}}" enctype="multipart/form-data">
             <div class="form-row">
                 <div class="form-group col-md-12">
-                    <label for="category">Categoría:<a class="ml-3" href="{{route("addAnnouncement")}}">  {{$category_name}}</a></label>
+                    <label for="category">Categoría:{{$category_name}}</label>
                     <select id="category" class="form-control" name="subcategory_selected">
                         <option selected>{{$subcategory_selected}}</option>
                         @foreach($subcategories as $subcategory)
@@ -118,48 +118,51 @@
                     </select>
                 </div>
 
-               <!-- <div class="form-group col-md-6">
-                    <label for="inputState">Тип</label>
-                    <select id="inputState" class="form-control">
-                        <option selected>Choose...</option>
-                        <option>...</option>
-                    </select>
-                </div>
-                -->
             </div>
             <div class="form-group">
                 <label for="adress">Dirección*</label>
-                <input type="text" class="form-control" id="adress" name="adress" placeholder="Улица">
+                <input type="text" class="form-control" id="adress" name="adress" placeholder="Улица" value="{{isset($old_values) ? $old_values["location"] : ''}}">
+                @error('adress')
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->get('adress') as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @enderror
             </div>
-
-            <!--<div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="city">Ciudad*</label>
-                    <input type="text" class="form-control" id="city" name="city">
-                </div>
-                <div class="form-group col-md-4">
-                    <label for="province">Provincia</label>
-                    <select id="province" class="form-control" name="province">
-                        <option selected>Alicante</option>
-                        <option>Valencia</option>
-                        <option>Barcelona</option>
-                        <option>Madrid</option>
-                    </select>
-                </div>
-                <div class="form-group col-md-2">
-                    <label for="zip">Индекс*</label>
-                    <input type="text" class="form-control" id="zip" name="zip">
-                </div>
-            </div>-->
 
             <div class="form-group">
                 <label for="announcement_name">Nombre del Producto*</label>
-                <input type="text" class="form-control" id="announcement_name" name="announcement_name" placeholder="Название товара">
+                <input type="text" class="form-control" id="announcement_name" name="announcement_name" placeholder="Título del anuncio"
+                    value="{{isset($old_values) ? $old_values["name"] : ''}}">
+                @error('announcement_name')
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->get('announcement_name') as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @enderror
             </div>
 
             <div class="form-group">
                 <label for="price">Precio*</label>
-                <input type="text" class="form-control" id="price" placeholder="$" name="price">
+                <input type="text" class="form-control" id="price" placeholder="$" name="price" value="{{isset($old_values) ? $old_values["price"] : ''}}">
+                @error('price')
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->get('price') as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @enderror
+
+
+
             </div>
 
             <div class="form-group">
@@ -167,22 +170,82 @@
                <!-- <input type="file" class="form-control" name="photos[]" />
                 <input type="file" class="form-control" name="photos[]" />-->
                 <div class="row">
+                    @if(!isset($old_values))
                     <div class="col-sm-2 imgUp">
                         <div class="imagePreview"></div>
                         <label class="btn btn-primary">Photo principal
-                            <input type="file" name="photos[]" class="uploadFile img" value="Upload Photo" style="width: 0px;height: 0px;overflow: hidden;">
+                            <input type="file" id="photos" name="photos[]" class="uploadFile img" value="Upload Photo" style="width: 0px;height: 0px;overflow: hidden;">
                         </label>
                     </div><!-- col-2 -->
+
+                    @else
+                        @foreach($old_values["announcement_images"] as $image)
+                            <div class="col-sm-2 imgUp">
+                                <!-- pasamos el id de las imagenes predefinidas-->
+                                <input type="hidden" name="photos[]" value="{{$image["image"]["id"]}}" class="hidden_input">
+                                <!-- подставлять input type hidden с фотографиями которые билдятся через foreach и потом в on change удалять их-->
+
+                                <div class="imagePreview" style='background-image: url("{{$image["image"]["image_url"]}}")'>
+                                </div>
+                                <label class="btn btn-primary">
+                                    @if($image["order_index"] == 1)
+                                        Photo principal
+                                    @else
+                                        Otra photo
+                                    @endif
+                                    <input type="file" name="photos[]" class="uploadFile img" value="Upload Photo"style="width:0px;height:0px;overflow:hidden;">
+
+                                </label>
+                                @if($image["order_index"] != 1)
+                                    <i class="fa fa-times del"></i>
+                                @endif
+                            </div>
+                        @endforeach
+                    @endif
                     <i class="fa fa-plus imgAdd"></i>
+
                 </div><!-- row -->
+                @error('photos')
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->get('photos') as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @enderror
+                @if ($errors->has('photos.*'))
+                    <div class="alert alert-danger">
+                        @foreach($errors->get('photos.*') as $error)
+                            <li>{{ "Solo son compatibles los formatos .jpeg, .png, .jpg, el tamaño máximo de la imagen debe ser de 2 MB" }}</li>
+                        @endforeach
+                    </div>
+                @endif
+
             </div>
 
             <div class="form-group">
                 <label for="description">Descripción</label>
-                <input type="text" class="form-control" id="description" placeholder="" name="description">
+                <input type="text" class="form-control" id="description" placeholder="" name="description" value="{{isset($old_values) ? $old_values["description"] : ''}}">
+                @error('description')
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->get('description') as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @enderror
             </div>
 
             {{ csrf_field() }}
+
+            @if(@isset($old_values))
+                @method('put')
+            @else
+                @method('post')
+            @endif
+
 
             <button type="submit" class="btn btn-primary">Siguiente</button>
         </form>

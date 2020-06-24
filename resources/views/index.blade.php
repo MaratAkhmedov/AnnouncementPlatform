@@ -38,14 +38,46 @@
     </style>
 @endsection
 
+@section("scripts")
+    <script>
+        $('form').submit(function(e){
+            var emptyinputs = $(this).find('input').filter(function(){
+            return !$.trim(this.value).length;  // get all empty fields
+        }).prop('disabled',true);
+        });
+    </script>
+@endsection
+
 @section("page_content")
-        <div class="row">
-            <h2 class="">Todos los anuncios</h2>
-            <form class="">
-                <select class="form-control right" id="exampleFormControlSelect1">
-                    <option>Precio</option>
-                    <option>Nombre</option>
-                    <option>Distancia</option>
+    <div class="row">
+            <h2 class="">
+                <?php
+                     if($subcategory_name){
+                         echo $subcategory_name;
+                     }
+                     elseif ($category_name){
+                         echo $category_name;
+                     }
+                     else{
+                         echo "Todos los anuncios";
+                     }
+                ?>
+            </h2>
+            <form class="" method="get">
+                <?php
+                    // add all parameters except page and order_by ()
+                    $parameters = request()->except(["page", "order_by"]);
+                    foreach ($parameters as $key => $value){
+                        echo "<input type='hidden' name=$key value=$value />";
+                    }
+                ?>
+                <select class="form-control right" id="exampleFormControlSelect1" onchange="this.form.submit()" name="order_by">
+                    <option <?php
+                        if(request()->get("order_by") == "Fecha"){echo "selected";}
+                        ?>>Fecha</option>
+                    <option
+                    <?php if(request()->get("order_by") == "Precio"){echo "selected";}?>>
+                        Precio</option>
                 </select>
             </form>
         </div>
@@ -61,7 +93,7 @@
                             <p class="card-text">Ciudad</p>
                             <p class="text-muted">{{$announcement->updated_at}}</p>
                             <a href="{{route("product_page",
-                                 ["category" => str_replace(" ","",$announcement->category_name),"subcategory" => str_replace(" ","",$announcement->subcategory_name),
+                                 ["category" => str_replace(" ","-",$announcement->category_name),"subcategory" => str_replace(" ","-",$announcement->subcategory_name),
                                   "id" => $announcement->id])}}" class="stretched-link"></a>
                         </div>
                     </div>
@@ -71,11 +103,20 @@
 @endsection
 
 @section("pagination")
-    {{ $announcements->onEachSide(1)->links() }}
+    {{ $announcements->onEachSide(1)->appends(request()->input())->links() }}
 @endsection
 
 @section("aside")
     <aside>
+        <form method="get" action="">
+
+            <?php
+            $parameters = request()->except(["page", "min_price", "max_price"]);
+            foreach ($parameters as $key => $value){
+                echo "<input type='hidden' name=$key value=$value />";
+            }
+            ?>
+
     <div class="card">
         <article class="card-group-item">
             <header class="card-header">
@@ -86,35 +127,41 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label>Min</label>
-                            <input type="number" class="form-control" id="inputEmail4" placeholder="Desde">
+                            <input type="number" class="form-control" id="inputEmail4" placeholder="Desde" name="min_price"
+                            @if(request()->has("min_price"))
+                                {{"value =" . request()->get("min_price")}}
+                            @endif>
                         </div>
                         <div class="form-group col-md-6 text-right">
                             <label>Max</label>
-                            <input type="number" class="form-control" placeholder="Hasta">
+                            <input type="number" class="form-control" placeholder="Hasta" name="max_price"
+                            @if(request()->has("max_price"))
+                                {{"value =" . request()->get("max_price")}}
+                            @endif>
                         </div>
                     </div>
                 </div> <!-- card-body.// -->
             </div>
 
             <article class="card-group-item">
-                <div class="filter-content">
+               <!-- <div class="filter-content">
                     <div class="card-body">
                         <div class="custom-control custom-checkbox">
-                            <!--<span class="float-right badge badge-light round">52</span>-->
                             <input type="checkbox" class="custom-control-input" id="Check1">
                             <label class="custom-control-label" for="Check1">Llevar a domicilio</label>
-                        </div> <!-- form-check.// -->
+                        </div>
 
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" class="custom-control-input" id="Check2">
                             <label class="custom-control-label" for="Check2">Rebajados</label>
-                        </div> <!-- form-check.// -->
-                    </div> <!-- card-body.// -->
-                </div>
+                        </div>
+                    </div>
+                </div>-->
             </article> <!-- card-group-item.// -->
         </article> <!-- card-group-item.// -->
     </div> <!-- card.// -->
-        <button class="btn custom_button" style="margin-top: 10px; width: 100%">Aplicar</button>
+        <button class="btn custom_button" type="submit" style="margin-top: 10px; width: 100%">Aplicar</button>
+ </form>
     </aside>
 
 

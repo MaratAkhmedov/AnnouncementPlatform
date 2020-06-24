@@ -38,6 +38,11 @@
 
 @section("scripts")
     @parent
+    <script>
+        $(document).ready(function() {
+             $("#1").first().addClass("text-white bg-secondary");
+        });
+    </script>
 @endsection
 
 @section("information")

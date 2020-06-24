@@ -7,7 +7,7 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <div class="dropdown">
+            <!--<div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Categorías
                 </button>
@@ -16,10 +16,56 @@
                     <a class="dropdown-item" href="#">Another action</a>
                     <a class="dropdown-item" href="#">Something else here</a>
                 </div>
+            </div>-->
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">Categorías
+                    <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <!--<li class="dropdown-submenu">
+                        <a tabindex="-1" href="#" class="dropdown-item test">New dropdown <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a tabindex="-1" href="#" class="dropdown-item">2nd level dropdown</a></li>
+                            <li><a tabindex="-1" href="#" class="dropdown-item">2nd level dropdown</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown-submenu">
+                        <a tabindex="-1" href="#" class="dropdown-item test">New dropdown <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a tabindex="-1" href="#" class="dropdown-item">2nd level dropdown</a></li>
+                            <li><a tabindex="-1" href="#" class="dropdown-item">2nd level dropdown</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown-submenu">
+                        <a tabindex="-1" href="#" class="dropdown-item test">New dropdown <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a tabindex="-1" href="#" class="dropdown-item">2nd level dropdown</a></li>
+                            <li><a tabindex="-1" href="#" class="dropdown-item">2nd level dropdown</a></li>
+                        </ul>
+                    </li>-->
+                    <?php
+                    foreach ($categories as $category){
+                        echo "<li class='dropdown-submenu'>";
+                        echo     "<a tabindex='-1' href='". "/". $category['category_name'] ."/'" . "class='dropdown-item test'>". $category['category_name'] ."<span class='caret'></span></a>";
+                        echo "<ul class='dropdown-menu'>";
+                        foreach ($category["subcategories"] as $subcategory){
+                            echo "<li><a tabindex='-1' href='/". $category["category_name"]. "/" . $subcategory["subcategory_name"] ."/'" . "class='dropdown-item'>" . $subcategory["subcategory_name"] . "</a></li>";
+                        }
+                        echo "</ul>";
+                    }
+                    ?>
+                </ul>
             </div>
         </ul>
-        <form class="form-inline" method="GET" action="">
-            <input class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search" name="q">
+        <form class="form-inline" method="get" action="
+                    @if(request()->route()->getName() != "/")
+                        {{url("/")}}
+                    @endif
+                ">
+            <input class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search" name="q"
+            @if(request()->has("q"))
+                {{"value =" . request()->get("q")}}
+            @endif
+                >
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
         </form>
         <a type="button" href="{{route("addAnnouncement")}}" class="btn btn-secondary ml-lg-5">Nuevo anuncio</a>
@@ -47,7 +93,7 @@
                 </div>
             <!-- en otro caso -->
             @else
-            <a type="button" class="btn btn-secondary ml-lg-5" href="{{ route('login') }}">Войти</a>
+            <a type="button" class="btn btn-secondary ml-lg-5" href="{{ route('login') }}">{{__('auth.login')}}</a>
             @endauth
         @endif
 

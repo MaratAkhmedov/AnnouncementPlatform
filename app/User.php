@@ -5,10 +5,13 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Notifications\email\VerifyEmail;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable;
+
+    protected $primaryKey  = 'id';
 
     /**
      * The attributes that are mass assignable.
@@ -56,5 +59,13 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany('App\Announcement');
     }
 
-
+    /**
+     * Send the email verification notification.
+     *
+     * @return void
+     */
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new VerifyEmail);
+    }
 }
