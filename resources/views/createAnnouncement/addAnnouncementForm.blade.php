@@ -121,7 +121,7 @@
             </div>
             <div class="form-group">
                 <label for="adress">Dirección*</label>
-                <input type="text" class="form-control" id="adress" name="adress" placeholder="Улица" value="{{isset($old_values) ? $old_values["location"] : ''}}">
+                <input type="text" class="form-control" id="adress" name="adress" placeholder="Dirección" value="{{isset($old_values) ? $old_values["location"] : ''}}">
                 @error('adress')
                 <div class="alert alert-danger">
                     <ul>
